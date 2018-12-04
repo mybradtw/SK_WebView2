@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         webView.addJavascriptInterface(new MyJS(), "sakura");
 
         webView.setWebViewClient(new MyWebViewClient());
+        webView.setWebChromeClient(new MyChromeClient());
 
 //        webView.loadUrl("file:///android_asset/brad01.html");
         webView.loadUrl("https://www.sakura.com.tw");
@@ -68,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.dismiss();
             Log.v("brad", "FinishPage:" + url);
         }
+    }
+
+    private class MyChromeClient extends WebChromeClient {
+        
     }
 
 
