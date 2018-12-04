@@ -1,5 +1,6 @@
 package tw.brad.mywebtest2;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mesg;
     private String myname = "";
     private UIHandler handler;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,13 @@ public class MainActivity extends AppCompatActivity {
         handler = new UIHandler();
         mesg = findViewById(R.id.mesg);
         webView = findViewById(R.id.webview);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+
+
         initWebView();
     }
 
@@ -36,15 +45,37 @@ public class MainActivity extends AppCompatActivity {
 
         webView.addJavascriptInterface(new MyJS(), "sakura");
 
-        webView.loadUrl("file:///android_asset/brad01.html");
-//        webView.loadUrl("https://www.sakura.com.tw");
+        webView.setWebViewClient(new MyWebViewClient());
+
+//        webView.loadUrl("file:///android_asset/brad01.html");
+        webView.loadUrl("https://www.sakura.com.tw");
     }
+
+    private class MyWebViewClient extends WebViewClient {
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            progressDialog.show();
+            Log.v("brad", "StartPage:" + url);
+            if (url.equals("https://www.sakura.com.tw/customer")){
+                webView.loadUrl("https://www.bradchao.com");
+            }
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            progressDialog.dismiss();
+            Log.v("brad", "FinishPage:" + url);
+        }
+    }
+
 
     public class MyJS {
         @JavascriptInterface
-        public void myTest1(String myname){
-            Log.v("brad", "Welcome " + myname);
-            MainActivity.this.myname = myname;
+        public void myTest1(String myname2){
+            Log.v("brad", "Welcome " + myname2);
+            myname = myname2;
             handler.sendEmptyMessage(0);
         }
     }
